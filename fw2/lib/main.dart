@@ -1,4 +1,7 @@
+import 'dart:html' as html;
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 void main() {
   runApp(MyApp());
@@ -8,22 +11,24 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: Scaffold(
-      body: Container(
-          child: Column(
-        children: [
-          Image.asset(
-            'assets/lake.jpg',
-            width: 500,
-            height: 300,
-            fit: BoxFit.cover,
-          ),
-          TitleSection(),
-          buttonSection(),
-          description(),
-        ],
-      )),
-    ));
+      home: Scaffold(
+        body: Container(
+            child: Column(
+          children: [
+            Image.asset(
+              'assets/ricado.jpg',
+              width: 500,
+              height: 300,
+              fit: BoxFit.cover,
+            ),
+            TitleSection(),
+            buttonSection(),
+            description(),
+          ],
+        )),
+      ),
+      builder: EasyLoading.init(),
+    );
   }
 }
 
@@ -39,11 +44,11 @@ class TitleSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Oeschinen Lake Campground',
+              'พี่โตถูกใจสิ่งนี้',
               style: TextStyle(fontWeight: (FontWeight.bold)),
             ),
             Text(
-              'Kandersteg, Switzerland',
+              'Ricardo Milos',
               style: TextStyle(),
             ),
           ],
@@ -95,9 +100,11 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
       if (_isFavorited) {
         _favoriteCount -= 1;
         _isFavorited = false;
+        EasyLoading.showInfo('Unliked');
       } else {
         _favoriteCount += 1;
         _isFavorited = true;
+        EasyLoading.showSuccess('Liked');
       }
     });
   }
@@ -114,9 +121,14 @@ class buttonSection extends StatelessWidget {
       children: [
         Column(
           children: [
-            Icon(
-              Icons.phone,
-              color: Colors.blue,
+            IconButton(
+              icon: (Icon(
+                Icons.phone,
+                color: Colors.blue,
+              )),
+              onPressed: () {
+                EasyLoading.showToast('พี่โตโทรหาคุณ');
+              },
             ),
             Text(
               "CALL",
@@ -126,28 +138,40 @@ class buttonSection extends StatelessWidget {
         ),
         Column(
           children: [
-            Icon(
-              Icons.near_me,
-              color: Colors.blue,
+            IconButton(
+              icon: (Icon(
+                Icons.near_me,
+                color: Colors.blue,
+              )),
+              onPressed: () {
+                EasyLoading.showToast('พี่โตถูกใจสิ่งนี้');
+              },
             ),
             Text(
-              "Route",
+              'ROUTE',
               style: TextStyle(color: Colors.blue),
-            )
+            ),
           ],
         ),
         Column(
           children: [
-            Icon(
-              Icons.share,
-              color: Colors.blue,
+            IconButton(
+              icon: (Icon(
+                Icons.share,
+                color: Colors.blue,
+              )),
+              onPressed: () {
+                html.window
+                    .open('https://www.youtube.com/watch?v=GM60LKSkbGA', '');
+              },
             ),
+            Text(''),
             Text(
-              "SHARE",
+              'SHARE',
               style: TextStyle(color: Colors.blue),
-            )
+            ),
           ],
-        ),
+        )
       ],
     ));
   }
@@ -162,7 +186,8 @@ class description extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         margin: const EdgeInsets.all(10),
         child: Text(
-          "Lake Oeschinen lies at the foot of the Bluemlisalp in the Bernese Alps. Situated 1,578 meters above sea level, it is one of the larger Alpine Lakes. A gondola ride from Kandersteg, followed by a half-hour walk through pastures and pine forest, leads you to the lake, which warms to 20 degrees Celsius in the summer. Activities enjoyed here include rowing, and riding the summer toboggan run.",
-        ));
+            "   คลิปผู้ชายกล้ามโต ผ้าโพกหัวสีแดง สวมเพียงกางเกงในลายธงชาติอเมริกันตัวจิ๋ว กำลังเต้นยั่วยวนโชว์บั้นท้ายติดระเบิด กับท่าทางยกนิ้วโป้งพร้อมแคปชัน “พี่โตถูกสิ่งนี้” กลายเป็นมีมสุดฮิตที่กำลังมาแรงในช่วงเวลานี้ ซึ่งแม้หน้าตาของเขาจะละม้ายคล้ายคลึงกับอดีตนักร้องชื่อดังวงคนโง่ แต่น้อยคนนักจะรู้ว่าแท้จริงแล้วเขาคือใครกันแน่"
+            "   ริคาร์โด ไมลอส คือชื่อจริงของชายคนนั้น"
+            "   ไมลอสเป็นนายแบบสำหรับผู้ใหญ่ชาวบราซิล ที่โด่งดังจากคลิปดังกล่าวในเว็บไซต์หนังโป๊เกย์ของประเทศอังกฤษในชื่อ Jock Butt ต่อมาคลิปดังกล่าวก็ถูกเผยแพร่ในเว็บไซต์ชื่อดังของประเทศญี่ปุ่น Nico Nico Douga (NND) ในหัวข้อ Gachimuchi หรือหนุ่มกล้ามโต (muscular boys) ทำให้คลิปเด้งเป้าของพี่แกกลายเป็นที่นิยมในประเทศญี่ปุ่น มีการทำคลิปล้อเลียนออกมาจำนวนมากจนเป็นไวรัล"));
   }
 }

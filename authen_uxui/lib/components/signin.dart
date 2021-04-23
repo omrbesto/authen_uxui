@@ -1,11 +1,9 @@
 import 'dart:math';
-
+import 'package:authen_uxui/components/futured.dart';
+import 'package:authen_uxui/components/usered.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class Signin extends StatefulWidget {
   final String status;
@@ -16,7 +14,6 @@ class Signin extends StatefulWidget {
 }
 
 class _SigninState extends State<Signin> {
-  String status;
   String email;
   String password;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -24,35 +21,31 @@ class _SigninState extends State<Signin> {
   @override
   void initState() {
     super.initState();
-    EasyLoading.init();
   }
 
   @override //+
 
   Widget build(BuildContext context) {
-    return Container(
-      decoration: new BoxDecoration(color: Colors.lightBlue[900]),
+    return new Scaffold(
+        body: new Container(
+      decoration: new BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/bg3.jpg'),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(Colors.black45, BlendMode.darken),
+        ),
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Center(
-            child: StreamBuilder<User>(
-              stream: FirebaseAuth.instance.authStateChanges(),
-              builder: (context, snap) {
-                final user = snap.data;
-                if (user != null) {
-                  return Text(
-                    'Signed-in with ${user.email}',
-                    style: TextStyle(color: Colors.white),
-                  );
-                }
-                return Text(
-                  'Sign-Out',
-                  style: TextStyle(color: Colors.white),
-                );
-              },
+              child: Text(
+            'Music Manager!!',
+            style: TextStyle(
+              fontSize: 36,
+              color: Colors.greenAccent,
             ),
-          ),
+          )),
           Container(
             padding: EdgeInsets.all(12),
             child: Column(
@@ -63,7 +56,7 @@ class _SigninState extends State<Signin> {
                   decoration: InputDecoration(
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30)),
-                      labelText: 'email',
+                      labelText: 'Email',
                       labelStyle: TextStyle(color: Colors.white)),
                 ),
                 Text(""),
@@ -75,24 +68,8 @@ class _SigninState extends State<Signin> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      labelText: 'password',
+                      labelText: 'Password',
                       labelStyle: TextStyle(color: Colors.white)),
-                )
-              ],
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.all(12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Column(
-                  children: [
-                    Text(
-                      "Forgot Password",
-                      style: TextStyle(color: Colors.white),
-                    )
-                  ],
                 )
               ],
             ),
@@ -102,45 +79,38 @@ class _SigninState extends State<Signin> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               buildButtonSignIn(),
-              buildButtonSignOut(),
-              buildButtonCData(),
-              buildButtonUData(),
+              buildButtonFSignin(),
+              buildButtonGSignin(),
+              Text(""),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Or you didn't have an ",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  Text(
+                    "acoount ?",
+                    style: TextStyle(color: Colors.amberAccent, fontSize: 16),
+                  ),
+                ],
+              ),
+              buildButtoncreateUser(),
             ],
           ),
         ],
       ),
-    );
-  }
-
-  void onClickSignOut() async {
-    await FirebaseAuth.instance.signOut();
-    EasyLoading.showSuccess("Sign-Out Complete");
-  }
-
-  void createData() {
-    final CollectionReference users =
-        FirebaseFirestore.instance.collection('users');
-    users
-        .add({'name': 'Mirana', 'type': 'Agi', 'hp': 1500, 'sex': 'Female'})
-        .then((value) => print('success'))
-        .catchError((e) => print(e));
-  }
-
-  void updateData() {
-    final CollectionReference users =
-        FirebaseFirestore.instance.collection('users');
-    users
-        .doc("vWQSjxgisl1Wy2xov3CH")
-        .update({'name': 'Lich', 'type': 'Int', 'hp': 800, 'sex': 'male'})
-        .then((value) => print('updated!'))
-        .catchError((e) => print('update error'));
+    ));
   }
 
   Future onClickSignIn() async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: "$email", password: "$password");
-      EasyLoading.showSuccess("Sign-in Complete");
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Usered()),
+      );
       print("Email : $email");
       print("Pass : $password");
     } on FirebaseAuthException catch (e) {
@@ -160,65 +130,155 @@ class _SigninState extends State<Signin> {
         child: InkWell(
           child: Text("Sign in",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18, color: Colors.white)),
-          onTap: () {
-            onClickSignIn();
+              style: TextStyle(fontSize: 18, color: Colors.black)),
+          onTap: () async {
+            if (email == null || password == null) {
+            } else
+              await onClickSignIn();
           },
+          //EasyLoading.showSuccess('Login Success!');
         ),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30), color: Colors.blue[300]),
+          gradient: LinearGradient(
+            colors: [HexColor("#00FFB0"), HexColor("#0082FF")],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(30),
+        ),
         margin: EdgeInsets.only(top: 16),
         padding: EdgeInsets.all(12));
   }
 
-  Container buildButtonSignOut() {
+  Future createUser() async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: '$email', password: '$password');
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => Usered()));
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The Password is to weak');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Container buildButtoncreateUser() {
     return Container(
         constraints: BoxConstraints.expand(width: 300, height: 50),
         child: InkWell(
-          child: Text("Sign out",
+          child: Text("Register",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18, color: Colors.white)),
-          onTap: () {
-            onClickSignOut();
+          onTap: () async {
+            if (email == null || password == null) {
+            } else
+              await createUser();
           },
         ),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30), color: Colors.blue[400]),
+          gradient: LinearGradient(
+            colors: [HexColor("#F61F46"), HexColor("#FF62B5")],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(30),
+        ),
         margin: EdgeInsets.only(top: 16),
         padding: EdgeInsets.all(12));
   }
 
-  Container buildButtonCData() {
+  Container buildButtonFSignin() {
     return Container(
         constraints: BoxConstraints.expand(width: 300, height: 50),
         child: InkWell(
-          child: Text("Create Data",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18, color: Colors.white)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                //margin: const EdgeInsets.only(left: 5.0, right: 5.0),
+                height: 30.0,
+                width: 30.0,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/fb.png'),
+                    fit: BoxFit.fill,
+                  ),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              Text("  "),
+              Text("Sign-in with Facebook",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, color: Colors.white)),
+            ],
+          ),
           onTap: () {
-            createData();
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => Futured()));
           },
         ),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30), color: Colors.blue[600]),
+          gradient: LinearGradient(
+            colors: [HexColor("#384DEA"), HexColor("#1830E9")],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(30),
+        ),
         margin: EdgeInsets.only(top: 16),
         padding: EdgeInsets.all(12));
   }
 
-  Container buildButtonUData() {
+  Container buildButtonGSignin() {
     return Container(
         constraints: BoxConstraints.expand(width: 300, height: 50),
         child: InkWell(
-          child: Text("Update Data",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18, color: Colors.white)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                //margin: const EdgeInsets.only(left: 5.0, right: 5.0),
+                height: 30.0,
+                width: 30.0,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/google.png'),
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ),
+              Text("  "),
+              Text("Sign-in with Google",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, color: Colors.black)),
+            ],
+          ),
           onTap: () {
-            updateData();
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => Futured()));
           },
         ),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30), color: Colors.blue[800]),
+            borderRadius: BorderRadius.circular(30), color: Colors.white),
         margin: EdgeInsets.only(top: 16),
         padding: EdgeInsets.all(12));
   }
+}
+
+class HexColor extends Color {
+  static int _getColorFromHex(String hexColor) {
+    hexColor = hexColor.toUpperCase().replaceAll("#", "");
+    if (hexColor.length == 6) {
+      hexColor = "FF" + hexColor;
+    }
+    return int.parse(hexColor, radix: 16);
+  }
+
+  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
 }

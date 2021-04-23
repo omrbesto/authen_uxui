@@ -51,11 +51,21 @@ flutter_icons:
 
 # The following section is specific to Flutter.
 flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/images/
+    - assets/images/bgop1.jpg
+    - assets/images/bg1.jpg
+    - assets/images/bg2.jpg
+    - assets/images/bg3.jpg
+    - assets/images/google.png
+    - assets/images/fb.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
-  uses-material-design: true
+  
 
   # To add assets to your application, add an assets section, like this:
   # assets:
